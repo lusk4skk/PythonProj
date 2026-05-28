@@ -30,7 +30,10 @@
                     <strong>{{ compra.produto_nome }}</strong>
                     <span>{{ compra.quantidade }} key - R$ {{ compra.valor_total }}</span>
                     <small>{{ compra.data|date:"d/m/Y H:i" }}</small>
-                    <button type="button" class="btn-ghost-sm">Avaliar</button>
+                    <form action="{% url 'removercompra' compra.id %}" method="post" class="remove-purchase-form">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-ghost-sm">Remover</button>
+                    </form>
                 </article>
                 {% endfor %}
             </div>

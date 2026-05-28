@@ -90,6 +90,17 @@ def comprarProduto(request, id_prod):
     return redirect('editarusuario')
 
 
+@login_required(login_url='login')
+def removerCompra(request, id_compra):
+    if request.method != 'POST':
+        return redirect('editarusuario')
+
+    compra = get_object_or_404(Compra, id=id_compra, usuario=request.user)
+    compra.delete()
+    messages.success(request, 'Compra removida do histórico.')
+    return redirect('editarusuario')
+
+
 @login_required
 @staff_member_required
 def listarCategoria(request):

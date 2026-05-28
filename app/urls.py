@@ -44,6 +44,8 @@ urlpatterns = [
     path('produto', views.listarProduto),
     path('comprar/<int:id_prod>/', views.comprarProduto, name="comprarproduto"),
     path('comprar/<int:id_prod>', views.comprarProduto),
+    path('remover-compra/<int:id_compra>/', views.removerCompra, name="removercompra"),
+    path('remover-compra/<int:id_compra>', views.removerCompra),
     path('edit-produto/<int:id_prod>/', views.editProduto, name="editproduto"),
     path('edit-produto/<int:id_prod>', views.editProduto),
     path('del-produto/<int:id_prod>/', views.delProduto, name="delproduto"),
