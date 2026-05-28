@@ -58,8 +58,10 @@ class ProdutoForm(forms.ModelForm):
 
 
 class FormAvaliacao(forms.ModelForm):
-    nota = forms.ChoiceField(
+    # TypedChoiceField garante que o valor é salvo como int, não string
+    nota = forms.TypedChoiceField(
         choices=[(i, i) for i in range(1, 6)],
+        coerce=int,
         widget=forms.RadioSelect(attrs={'class': 'star-radio'}),
         label='Sua nota',
     )

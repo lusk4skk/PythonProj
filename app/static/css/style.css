@@ -1651,7 +1651,7 @@ td a:hover { color: var(--accent-hover); }
     background: var(--surface2, #1a1a2e);
 }
 
-/* Grupo de estrelas clicáveis */
+/* Seletor de estrelas com JS */
 .star-rating-group {
     display: flex;
     flex-direction: column;
@@ -1663,35 +1663,28 @@ td a:hover { color: var(--accent-hover); }
     color: var(--muted, #888);
 }
 
-.star-options {
+.star-picker {
     display: flex;
-    gap: .2rem;
-    flex-direction: row-reverse;
-    justify-content: flex-end;
+    gap: .15rem;
+    align-items: center;
 }
 
-.star-label {
+.star-btn {
     cursor: pointer;
-    font-size: 1.6rem;
+    font-size: 1.7rem;
     color: #444;
-    transition: color .15s;
+    transition: color .1s, transform .1s;
+    user-select: none;
+    line-height: 1;
 }
 
-.star-label input[type="radio"] {
-    display: none;
-}
-
-/* Hover / checked via CSS reverse trick */
-.star-options:hover .star-label { color: #f59e0b; }
-.star-options .star-label:hover ~ .star-label { color: #444; }
-.star-label input:checked ~ .star-icon { color: #f59e0b; }
-.star-options:has(.star-label input:checked) .star-label { color: #444; }
-.star-options .star-label:has(input:checked) ~ .star-label .star-icon { color: #f59e0b; }
-
-/* Simpler fallback: highlight on hover forward */
-.star-label:hover .star-icon,
-.star-label:hover ~ .star-label .star-icon {
+.star-btn.active,
+.star-btn.selected {
     color: #f59e0b;
+}
+
+.star-btn:hover {
+    transform: scale(1.15);
 }
 
 .avaliacao-form textarea {

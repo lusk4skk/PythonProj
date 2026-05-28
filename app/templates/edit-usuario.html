@@ -32,26 +32,22 @@
                     <small>{{ compra.data|date:"d/m/Y H:i" }}</small>
 
                     {% if compra.id in compras_avaliadas %}
-                        {# Avaliação já enviada: exibe a nota #}
                         <div class="avaliacao-enviada">
                             <span class="stars-display">{{ compra.avaliacao.estrelas }}</span>
                             <p class="avaliacao-comentario-exibido">"{{ compra.avaliacao.comentario }}"</p>
                         </div>
                     {% else %}
-                        {# Formulário de avaliação #}
                         <details class="avaliacao-details">
-                            <summary>Avaliar esta compra</summary>
+                            <summary>⭐ Avaliar esta compra</summary>
                             <form action="{% url 'avaliarcompra' compra.id %}" method="post" class="avaliacao-form">
                                 {% csrf_token %}
                                 <div class="star-rating-group">
                                     <label class="star-rating-label">Sua nota:</label>
-                                    <div class="star-options">
-                                        {% for val in "12345" %}
-                                        <label class="star-label">
-                                            <input type="radio" name="nota" value="{{ val }}" required>
-                                            <span class="star-icon">★</span>
-                                        </label>
+                                    <div class="star-picker" data-form="avaliacao-{{ compra.id }}">
+                                        {% for i in "12345" %}
+                                        <span class="star-btn" data-value="{{ i }}">★</span>
                                         {% endfor %}
+                                        <input type="hidden" name="nota" value="" required>
                                     </div>
                                 </div>
                                 <textarea name="comentario" rows="2" maxlength="500"
@@ -76,5 +72,36 @@
         {% endif %}
     </section>
 </div>
+
+<script>
+document.querySelectorAll('.star-picker').forEach(function(picker) {
+    var stars = picker.querySelectorAll('.star-btn');
+    var input = picker.querySelector('input[name="nota"]');
+
+    stars.forEach(function(star, idx) {
+        star.addEventListener('mouseenter', function() {
+            stars.forEach(function(s, i) {
+                s.classList.toggle('active', i <= idx);
+            });
+        });
+        star.addEventListener('click', function() {
+            var val = star.getAttribute('data-value');
+            input.value = val;
+            stars.forEach(function(s, i) {
+                s.classList.toggle('selected', i <= idx);
+                s.classList.toggle('active', i <= idx);
+            });
+        });
+    });
+
+    picker.addEventListener('mouseleave', function() {
+        var selected = input.value;
+        stars.forEach(function(s, i) {
+            s.classList.remove('active');
+            s.classList.toggle('selected', selected && (i + 1) <= parseInt(selected));
+        });
+    });
+});
+</script>
 
 {% endblock %}
