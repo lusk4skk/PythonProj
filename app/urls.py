@@ -51,6 +51,10 @@ urlpatterns = [
     path('del-produto/<int:id_prod>/', views.delProduto, name="delproduto"),
     path('del-produto/<int:id_prod>', views.delProduto),
 
+    # Avaliações
+    path('avaliar/<int:id_compra>/', views.avaliarCompra, name="avaliarcompra"),
+    path('avaliar/<int:id_compra>', views.avaliarCompra),
+
     # Dashboard
     path('dashboard/', views.dashboard, name="dashboard"),
     path('dashboard', views.dashboard),
@@ -60,4 +64,8 @@ urlpatterns = [
     path('dashboard/usuarios/edit/<int:id_user>', views.editUsuarioAdmin),
     path('dashboard/usuarios/del/<int:id_user>/', views.delUsuario, name="delusuario"),
     path('dashboard/usuarios/del/<int:id_user>', views.delUsuario),
+    path('dashboard/avaliacoes/', views.listarAvaliacoes, name="avaliacoesadmin"),
+    path('dashboard/avaliacoes', views.listarAvaliacoes),
+    path('dashboard/avaliacoes/del/<int:id_aval>/', views.delAvaliacao, name="delavaliacao"),
+    path('dashboard/avaliacoes/del/<int:id_aval>', views.delAvaliacao),
 ]

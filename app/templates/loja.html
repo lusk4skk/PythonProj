@@ -13,6 +13,7 @@
 {% if produtos %}
 <div class="loja-grid">
     {% for prod in produtos %}
+    {% with aval=produtos_avaliacoes|default_if_none:"" %}
     <div class="product-card">
         <div class="product-img-wrap">
             {% if prod.imagem %}
@@ -24,6 +25,46 @@
         </div>
         <div class="product-info">
             <h3 class="product-name">{{ prod.nome }}</h3>
+
+            {# Avaliações do produto #}
+            {% with info=produtos_avaliacoes|default_if_none:"" %}
+            {% if produtos_avaliacoes %}
+                {% with prod_info=produtos_avaliacoes|dictsort:"0" %}
+                {# Usa o id do produto para acessar o dict no template via custom filter não disponível, usa forloop #}
+                {% endwith %}
+            {% endif %}
+            {% endwith %}
+
+            {# Exibe avaliações usando tag for nas avaliacoes direto do produto #}
+            {% with total_avals=prod.avaliacoes.count %}
+            {% if total_avals > 0 %}
+                {% with media=prod.avaliacoes.all %}
+                <div class="product-rating">
+                    <span class="stars-mini">
+                        {% for a in media %}{% if forloop.first %}
+                            {% with nota=a.nota %}
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= nota %}★{% else %}☆{% endif %}
+                                {% endfor %}
+                            {% endwith %}
+                        {% endif %}{% endfor %}
+                    </span>
+                    <span class="rating-count">({{ total_avals }} avaliação{% if total_avals > 1 %}ões{% endif %})</span>
+                </div>
+                {% endwith %}
+                {# Lista as últimas 3 avaliações #}
+                <div class="product-reviews">
+                    {% for av in prod.avaliacoes.all|slice:":3" %}
+                    <div class="review-item">
+                        <span class="review-stars">{{ av.estrelas }}</span>
+                        <span class="review-user">{{ av.usuario.username }}</span>
+                        <p class="review-comment">{{ av.comentario }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% endwith %}
+
             <div class="product-meta">
                 <span class="product-qty">Estoque: {{ prod.quantidade }}</span>
             </div>
@@ -44,6 +85,7 @@
             </div>
         </div>
     </div>
+    {% endwith %}
     {% endfor %}
 </div>
 {% else %}

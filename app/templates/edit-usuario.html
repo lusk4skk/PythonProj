@@ -30,6 +30,37 @@
                     <strong>{{ compra.produto_nome }}</strong>
                     <span>{{ compra.quantidade }} key - R$ {{ compra.valor_total }}</span>
                     <small>{{ compra.data|date:"d/m/Y H:i" }}</small>
+
+                    {% if compra.id in compras_avaliadas %}
+                        {# Avaliação já enviada: exibe a nota #}
+                        <div class="avaliacao-enviada">
+                            <span class="stars-display">{{ compra.avaliacao.estrelas }}</span>
+                            <p class="avaliacao-comentario-exibido">"{{ compra.avaliacao.comentario }}"</p>
+                        </div>
+                    {% else %}
+                        {# Formulário de avaliação #}
+                        <details class="avaliacao-details">
+                            <summary>Avaliar esta compra</summary>
+                            <form action="{% url 'avaliarcompra' compra.id %}" method="post" class="avaliacao-form">
+                                {% csrf_token %}
+                                <div class="star-rating-group">
+                                    <label class="star-rating-label">Sua nota:</label>
+                                    <div class="star-options">
+                                        {% for val in "12345" %}
+                                        <label class="star-label">
+                                            <input type="radio" name="nota" value="{{ val }}" required>
+                                            <span class="star-icon">★</span>
+                                        </label>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <textarea name="comentario" rows="2" maxlength="500"
+                                    placeholder="Conte sua experiência..." required></textarea>
+                                <button type="submit" class="btn-avaliar">Enviar avaliação</button>
+                            </form>
+                        </details>
+                    {% endif %}
+
                     <form action="{% url 'removercompra' compra.id %}" method="post" class="remove-purchase-form">
                         {% csrf_token %}
                         <button type="submit" class="btn-ghost-sm">Remover</button>

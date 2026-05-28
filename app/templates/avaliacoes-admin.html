@@ -1,0 +1,43 @@
+{% extends 'template.html' %}
+
+{% block titulo %}Avaliações{% endblock %}
+
+{% block conteudo %}
+
+<section class="profile-header">
+    <span class="section-label">Painel Administrativo</span>
+    <h1>Avaliações dos clientes</h1>
+    <p>Gerencie todas as avaliações enviadas pelos usuários.</p>
+</section>
+
+{% if messages %}
+    {% for msg in messages %}
+    <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+    {% endfor %}
+{% endif %}
+
+{% if avaliacoes %}
+<div class="purchase-list">
+    {% for av in avaliacoes %}
+    <article class="purchase-card">
+        <strong>{{ av.produto.nome|default:"Produto removido" }}</strong>
+        <span class="stars-display">{{ av.estrelas }}</span>
+        <p>{{ av.comentario }}</p>
+        <small>por <strong>{{ av.usuario.username }}</strong> em {{ av.data|date:"d/m/Y H:i" }}</small>
+        <form action="{% url 'delavaliacao' av.id %}" method="post" class="remove-purchase-form">
+            {% csrf_token %}
+            <button type="submit" class="btn-ghost-sm">Remover</button>
+        </form>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state compact">
+    <h3>Nenhuma avaliação ainda</h3>
+    <p>As avaliações dos clientes aparecerão aqui.</p>
+</div>
+{% endif %}
+
+<a href="{% url 'dashboard' %}" class="btn-ghost-sm" style="margin-top:2rem;display:inline-block">← Voltar ao dashboard</a>
+
+{% endblock %}

@@ -1,7 +1,8 @@
 from django import forms
-from app.models import Categoria, Contato, Produto
+from app.models import Categoria, Contato, Produto, Avaliacao
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User  
+from django.contrib.auth.models import User
+
 
 class FormUsuario(UserCreationForm):
     error_messages = {
@@ -27,7 +28,8 @@ class FormUsuario(UserCreationForm):
             },
         }
 
-class FormEditarUsuario(forms.ModelForm): 
+
+class FormEditarUsuario(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'email']
@@ -36,17 +38,40 @@ class FormEditarUsuario(forms.ModelForm):
             'email': 'E-mail'
         }
 
+
 class FormCategoria(forms.ModelForm):
     class Meta:
         model = Categoria
         fields = ['nome']
+
 
 class FormContato(forms.ModelForm):
     class Meta:
         model = Contato
         fields = ['nome', 'email', 'assunto', 'mensagem']
 
+
 class ProdutoForm(forms.ModelForm):
     class Meta:
         model = Produto
         fields = ['nome', 'imagem', 'quantidade', 'preco', 'categoria']
+
+
+class FormAvaliacao(forms.ModelForm):
+    nota = forms.ChoiceField(
+        choices=[(i, i) for i in range(1, 6)],
+        widget=forms.RadioSelect(attrs={'class': 'star-radio'}),
+        label='Sua nota',
+    )
+    comentario = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'rows': 3,
+            'placeholder': 'Conte como foi sua experiência com este produto...',
+        }),
+        max_length=500,
+        label='Comentário',
+    )
+
+    class Meta:
+        model = Avaliacao
+        fields = ['nota', 'comentario']

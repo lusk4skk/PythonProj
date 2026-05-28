@@ -5,8 +5,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 from django.contrib import messages
-from app.models import Categoria, Contato, Produto, Compra
-from app.forms import FormCategoria, FormContato, ProdutoForm, FormUsuario, FormEditarUsuario
+from app.models import Categoria, Contato, Produto, Compra, Avaliacao
+from app.forms import FormCategoria, FormContato, ProdutoForm, FormUsuario, FormEditarUsuario, FormAvaliacao
 
 
 def index(request):
@@ -22,8 +22,28 @@ def quemSomos(request):
 
 
 def loja(request):
-    produtos = Produto.objects.all()
-    return render(request, 'loja.html', {'produtos': produtos})
+    produtos = Produto.objects.prefetch_related('avaliacoes__usuario').all()
+
+    # Calcula média e total de avaliações por produto
+    from django.db.models import Avg, Count
+    produtos_com_media = {}
+    for p in produtos:
+        avals = p.avaliacoes.all()
+        if avals.exists():
+            media = sum(a.nota for a in avals) / len(avals)
+            produtos_com_media[p.id] = {
+                'media': round(media, 1),
+                'total': len(avals),
+                'estrelas_cheias': int(media),
+                'avaliacoes': avals,
+            }
+        else:
+            produtos_com_media[p.id] = None
+
+    return render(request, 'loja.html', {
+        'produtos': produtos,
+        'produtos_avaliacoes': produtos_com_media,
+    })
 
 
 def cadastrarUsuario(request):
@@ -61,8 +81,19 @@ def editarUsuario(request):
         if formulario.is_valid():
             formulario.save()
             return redirect('editarusuario')
-    compras = Compra.objects.filter(usuario=request.user).order_by('-data')
-    return render(request, 'edit-usuario.html', {'form': formulario, 'compras': compras})
+    compras = Compra.objects.filter(usuario=request.user).order_by('-data').select_related('produto')
+
+    # Verifica quais compras já têm avaliação
+    compras_avaliadas = set(
+        Avaliacao.objects.filter(usuario=request.user).values_list('compra_id', flat=True)
+    )
+
+    return render(request, 'edit-usuario.html', {
+        'form': formulario,
+        'compras': compras,
+        'compras_avaliadas': compras_avaliadas,
+        'form_avaliacao': FormAvaliacao(),
+    })
 
 
 @login_required(login_url='login')
@@ -100,6 +131,34 @@ def removerCompra(request, id_compra):
     messages.success(request, 'Compra removida do histórico.')
     return redirect('editarusuario')
 
+
+@login_required(login_url='login')
+def avaliarCompra(request, id_compra):
+    if request.method != 'POST':
+        return redirect('editarusuario')
+
+    compra = get_object_or_404(Compra, id=id_compra, usuario=request.user)
+
+    # Impede avaliação duplicada
+    if hasattr(compra, 'avaliacao'):
+        messages.warning(request, 'Você já avaliou esta compra.')
+        return redirect('editarusuario')
+
+    formulario = FormAvaliacao(request.POST)
+    if formulario.is_valid():
+        avaliacao = formulario.save(commit=False)
+        avaliacao.compra = compra
+        avaliacao.usuario = request.user
+        avaliacao.produto = compra.produto
+        avaliacao.save()
+        messages.success(request, f'Avaliação de "{compra.produto_nome}" enviada! Obrigado.')
+    else:
+        messages.error(request, 'Erro ao enviar avaliação. Verifique os campos.')
+
+    return redirect('editarusuario')
+
+
+# ── ADMIN VIEWS ──────────────────────────────────────────────────────────────
 
 @login_required
 @staff_member_required
@@ -207,18 +266,44 @@ def delProduto(request, id_prod):
 @login_required
 @staff_member_required
 def dashboard(request):
+    from django.db.models import Avg
     total_produtos = Produto.objects.count()
     total_categorias = Categoria.objects.count()
     total_contatos = Contato.objects.count()
     total_usuarios = User.objects.count()
     total_compras = Compra.objects.count()
+    total_avaliacoes = Avaliacao.objects.count()
+    media_geral = Avaliacao.objects.aggregate(media=Avg('nota'))['media']
+    media_geral = round(media_geral, 1) if media_geral else None
+
+    ultimas_avaliacoes = Avaliacao.objects.select_related('usuario', 'produto').order_by('-data')[:5]
+
     return render(request, 'dashboard.html', {
         'total_produtos': total_produtos,
         'total_categorias': total_categorias,
         'total_contatos': total_contatos,
         'total_usuarios': total_usuarios,
         'total_compras': total_compras,
+        'total_avaliacoes': total_avaliacoes,
+        'media_geral': media_geral,
+        'ultimas_avaliacoes': ultimas_avaliacoes,
     })
+
+
+@login_required
+@staff_member_required
+def listarAvaliacoes(request):
+    avaliacoes = Avaliacao.objects.select_related('usuario', 'produto').order_by('-data')
+    return render(request, 'avaliacoes-admin.html', {'avaliacoes': avaliacoes})
+
+
+@login_required
+@staff_member_required
+def delAvaliacao(request, id_aval):
+    avaliacao = get_object_or_404(Avaliacao, id=id_aval)
+    avaliacao.delete()
+    messages.success(request, 'Avaliação removida.')
+    return redirect('avaliacoesadmin')
 
 
 @login_required

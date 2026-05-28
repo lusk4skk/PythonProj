@@ -72,6 +72,17 @@
             <span class="stat-card-label">Usuários</span>
         </div>
     </div>
+    <div class="stat-card">
+        <span class="stat-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+        </span>
+        <div>
+            <span class="stat-card-num">{{ total_avaliacoes }}</span>
+            <span class="stat-card-label">Avaliações{% if media_geral %} · {{ media_geral }}★{% endif %}</span>
+        </div>
+    </div>
 </div>
 
 <h2 class="dash-section-title">Gerenciar</h2>
@@ -135,6 +146,40 @@
         </div>
         <span class="dash-card-arrow">→</span>
     </a>
+
+    <a href="{% url 'avaliacoesadmin' %}" class="dash-card">
+        <div class="dash-card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+        </div>
+        <div class="dash-card-body">
+            <h3>Avaliações</h3>
+            <p>Ver e moderar as avaliações dos clientes.</p>
+        </div>
+        <span class="dash-card-arrow">→</span>
+    </a>
 </div>
+
+{% if ultimas_avaliacoes %}
+<h2 class="dash-section-title">Avaliações recentes</h2>
+<div class="recent-reviews-list">
+    {% for av in ultimas_avaliacoes %}
+    <div class="recent-review-card">
+        <div class="recent-review-header">
+            <span class="recent-review-stars">{{ av.estrelas }}</span>
+            <strong class="recent-review-produto">{{ av.produto.nome|default:"-" }}</strong>
+            <span class="recent-review-usuario">por {{ av.usuario.username }}</span>
+            <small class="recent-review-data">{{ av.data|date:"d/m/Y" }}</small>
+        </div>
+        <p class="recent-review-comentario">{{ av.comentario }}</p>
+        <form action="{% url 'delavaliacao' av.id %}" method="post" style="display:inline">
+            {% csrf_token %}
+            <button type="submit" class="btn-ghost-sm">Remover</button>
+        </form>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 
 {% endblock %}
