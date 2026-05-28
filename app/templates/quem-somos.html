@@ -1,0 +1,36 @@
+{% extends 'template.html' %}
+{% load static %}
+
+{% block titulo %}Quem Somos{% endblock %}
+
+{% block conteudo %}
+
+<section class="qs-about">
+    <div class="section-content">
+        <span class="section-label">Nossa história</span>
+        <h2>Uma loja de keys digitais feita para jogadores</h2>
+        <p>A SteamKey Hub é um projeto Django voltado para venda de keys de jogos para Steam. A proposta é reunir um catálogo simples, com controle de estoque, compra para usuários logados e histórico de pedidos no perfil.</p>
+        <p>O sistema foi desenvolvido como trabalho de Web3, mantendo páginas institucionais, cadastro, login, produtos, contato e painel administrativo.</p>
+    </div>
+</section>
+
+<section class="qs-team">
+    <span class="section-label">Time</span>
+    <h2>Desenvolvedores</h2>
+    <p class="team-subtitle">Responsáveis pelo desenvolvimento e adaptação do projeto.</p>
+    <div class="team-grid">
+        {% for membro in membros %}
+        <div class="team-card">
+            <div class="team-avatar team-avatar-photo">
+                <img src="{% static membro.foto %}" alt="{{ membro.nome }}" onerror="this.style.display='none'">
+                <span class="avatar-initials">{{ membro.nome|slice:":2"|upper }}</span>
+            </div>
+            <h3 class="team-name">{{ membro.nome }}</h3>
+            <p class="team-email">{{ membro.cargo }}</p>
+            <span class="team-badge">Web3</span>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}

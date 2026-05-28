@@ -1,0 +1,46 @@
+{% extends 'template.html' %}
+
+{% block titulo %}Meu Perfil{% endblock %}
+
+{% block conteudo %}
+
+<section class="profile-header">
+    <span class="section-label">Minha conta</span>
+    <h1>Perfil</h1>
+    <p>Atualize seus dados e acompanhe as keys compradas.</p>
+</section>
+
+<div class="profile-grid">
+    <section>
+        <h2>Dados do usuário</h2>
+        <form action="{% url 'editarusuario' %}" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Salvar">
+        </form>
+        <a href="{% url 'alterarsenha' %}" class="btn-ghost-sm profile-password">Alterar senha</a>
+    </section>
+
+    <section>
+        <h2>Histórico de compras</h2>
+        {% if compras %}
+            <div class="purchase-list">
+                {% for compra in compras %}
+                <article class="purchase-card">
+                    <strong>{{ compra.produto_nome }}</strong>
+                    <span>{{ compra.quantidade }} key - R$ {{ compra.valor_total }}</span>
+                    <small>{{ compra.data|date:"d/m/Y H:i" }}</small>
+                    <button type="button" class="btn-ghost-sm">Avaliar</button>
+                </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state compact">
+                <h3>Nenhuma compra realizada</h3>
+                <p>Quando você comprar uma key, ela aparecerá aqui.</p>
+            </div>
+        {% endif %}
+    </section>
+</div>
+
+{% endblock %}

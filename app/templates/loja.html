@@ -1,0 +1,57 @@
+{% extends 'template.html' %}
+
+{% block titulo %}SteamKey Hub - Keys{% endblock %}
+
+{% block conteudo %}
+
+<section class="loja-header">
+    <span class="section-label">Catálogo Steam</span>
+    <h1>Keys disponíveis</h1>
+    <p class="loja-subtitle">Escolha uma key, finalize a compra e acompanhe seu histórico no perfil.</p>
+</section>
+
+{% if produtos %}
+<div class="loja-grid">
+    {% for prod in produtos %}
+    <div class="product-card">
+        <div class="product-img-wrap">
+            {% if prod.imagem %}
+                <img src="{{ prod.imagem.url }}" alt="{{ prod.nome }}">
+            {% else %}
+                <div class="product-img-placeholder">STEAM</div>
+            {% endif %}
+            <span class="product-badge">{{ prod.categoria }}</span>
+        </div>
+        <div class="product-info">
+            <h3 class="product-name">{{ prod.nome }}</h3>
+            <div class="product-meta">
+                <span class="product-qty">Estoque: {{ prod.quantidade }}</span>
+            </div>
+            <div class="product-footer">
+                <span class="product-price">R$ {{ prod.preco }}</span>
+                {% if user.is_authenticated %}
+                    {% if prod.quantidade > 0 %}
+                    <form action="{% url 'comprarproduto' prod.id %}" method="post" class="buy-form">
+                        {% csrf_token %}
+                        <button class="btn-comprar" type="submit">Comprar</button>
+                    </form>
+                    {% else %}
+                        <button class="btn-comprar" type="button" disabled>Esgotado</button>
+                    {% endif %}
+                {% else %}
+                    <a class="btn-comprar" href="{% url 'login' %}">Entrar</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <span class="empty-icon">STEAM</span>
+    <h2>Nenhuma key disponível</h2>
+    <p>Em breve novas keys serão adicionadas.</p>
+</div>
+{% endif %}
+
+{% endblock %}

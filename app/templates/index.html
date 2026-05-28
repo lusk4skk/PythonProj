@@ -1,0 +1,52 @@
+{% extends 'template.html' %}
+
+{% block titulo %}SteamKey Hub{% endblock %}
+
+{% block conteudo %}
+
+<section class="hero">
+    <div class="hero-badge">Keys digitais para Steam</div>
+    <h1 class="hero-title">Compre jogos e ative direto na sua conta Steam.</h1>
+    <p class="hero-subtitle">Catálogo com keys de ação, RPG, simulação e indies. Compra rápida, estoque atualizado e histórico salvo no seu perfil.</p>
+    <div class="hero-actions">
+        {% if user.is_authenticated %}
+            <a href="{% url 'loja' %}" class="btn-primary">Ver keys disponíveis</a>
+        {% else %}
+            <a href="{% url 'cadastro' %}" class="btn-primary">Criar conta</a>
+            <a href="{% url 'loja' %}" class="btn-ghost">Explorar catálogo</a>
+        {% endif %}
+    </div>
+</section>
+
+<section class="home-section">
+    <div class="section-content">
+        <span class="section-label">Como funciona</span>
+        <h2>Escolha, compre e acompanhe tudo pelo perfil</h2>
+        <p>A SteamKey Hub organiza keys digitais para quem quer montar uma biblioteca de jogos sem perder tempo. Cada produto mostra preço, categoria e quantidade em estoque.</p>
+        <p>Ao comprar uma key, o estoque é reduzido automaticamente e a compra aparece no histórico do usuário logado.</p>
+    </div>
+</section>
+
+<section class="home-section home-section--alt">
+    <span class="section-label">Avaliações</span>
+    <h2>O que os clientes dizem</h2>
+    <div class="reviews-grid">
+        <article class="review-card">
+            <strong>Entrega simples</strong>
+            <p>Comprei uma key de RPG e o pedido apareceu no meu perfil na hora.</p>
+            <span>Marina S.</span>
+        </article>
+        <article class="review-card">
+            <strong>Catálogo direto</strong>
+            <p>Gostei de ver estoque e preço sem precisar abrir várias telas.</p>
+            <span>Rafael M.</span>
+        </article>
+        <article class="review-card">
+            <strong>Visual organizado</strong>
+            <p>O site facilita comparar jogos e acompanhar as compras realizadas.</p>
+            <span>Bianca T.</span>
+        </article>
+    </div>
+</section>
+
+{% endblock %}
