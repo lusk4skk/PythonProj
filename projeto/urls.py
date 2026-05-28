@@ -15,10 +15,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include 
+from django.urls import path, include, re_path
 from django.conf import settings
-from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
+from django.views.static import serve
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,6 +29,9 @@ urlpatterns = [
     path("alterar-senha/", auth_views.PasswordChangeView.as_view(template_name="alterar-senha.html", success_url="confirma"), name="alterarsenha"),
     path("alterar-senha/confirma/", auth_views.PasswordChangeDoneView.as_view(template_name="confirma-senha.html"), name="confirmasenha"),
 
+] 
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
+# Serve as imagens de produtos versionadas em media/ também no deploy.
+urlpatterns += [
+    re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+]
