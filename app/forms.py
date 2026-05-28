@@ -4,12 +4,27 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User  
 
 class FormUsuario(UserCreationForm):
+    error_messages = {
+        'password_mismatch': 'As duas senhas não conferem.',
+    }
+
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
         labels = {
-            'username': 'Nome',
-            'email': 'E-mail'
+            'username': 'Usuário',
+            'email': 'E-mail',
+            'password1': 'Senha',
+            'password2': 'Confirmar senha',
+        }
+        error_messages = {
+            'username': {
+                'unique': 'Já existe um usuário com esse nome. Escolha outro nome ou entre com a conta existente.',
+                'required': 'Informe um nome de usuário.',
+            },
+            'email': {
+                'invalid': 'Informe um e-mail válido.',
+            },
         }
 
 class FormEditarUsuario(forms.ModelForm): 

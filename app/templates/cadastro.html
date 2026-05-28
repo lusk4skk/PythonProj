@@ -6,15 +6,58 @@
 
 <h1>Criar Conta</h1>
 
-<br>
+{% if form.non_field_errors %}
+    <div class="form-errors">
+        {% for erro in form.non_field_errors %}
+            <div class="message message-error">{{ erro }}</div>
+        {% endfor %}
+    </div>
+{% endif %}
 
-<form action="{% url 'cadastro' %}" method="post">
+<form action="{% url 'cadastro' %}" method="post" class="auth-form">
     {% csrf_token %}
-    {{ form.as_p }}
+
+    <div class="form-field">
+        <label for="{{ form.username.id_for_label }}">Usuário</label>
+        {{ form.username }}
+        {% for erro in form.username.errors %}
+            <span class="field-error">{{ erro }}</span>
+        {% endfor %}
+    </div>
+
+    <div class="form-field">
+        <label for="{{ form.email.id_for_label }}">E-mail</label>
+        {{ form.email }}
+        {% for erro in form.email.errors %}
+            <span class="field-error">{{ erro }}</span>
+        {% endfor %}
+    </div>
+
+    <div class="form-field">
+        <label for="{{ form.password1.id_for_label }}">Senha</label>
+        {{ form.password1 }}
+        {% if form.password1.help_text %}
+            <div class="field-help">{{ form.password1.help_text }}</div>
+        {% endif %}
+        {% for erro in form.password1.errors %}
+            <span class="field-error">{{ erro }}</span>
+        {% endfor %}
+    </div>
+
+    <div class="form-field">
+        <label for="{{ form.password2.id_for_label }}">Confirmar senha</label>
+        {{ form.password2 }}
+        {% if form.password2.help_text %}
+            <div class="field-help">{{ form.password2.help_text }}</div>
+        {% endif %}
+        {% for erro in form.password2.errors %}
+            <span class="field-error">{{ erro }}</span>
+        {% endfor %}
+    </div>
+
     <input type="submit" value="Cadastrar">
 </form>
 
-<br>
 <p style="display:inline; background:none; border:none; padding:0;">
     Já tem conta? <a href="{% url 'login' %}">Entrar</a>
 </p>

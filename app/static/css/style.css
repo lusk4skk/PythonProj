@@ -1522,6 +1522,32 @@ header h1,
   color: var(--accent-red);
 }
 
+.form-field {
+  margin-bottom: 16px;
+}
+
+.form-field label {
+  margin-top: 0;
+}
+
+.field-error {
+  display: block;
+  color: var(--accent-red);
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+.field-help {
+  color: var(--text-tertiary);
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 6px;
+}
+
+.field-help ul {
+  margin: 6px 0 0 18px;
+}
+
 .profile-header {
   margin-bottom: 32px;
 }
